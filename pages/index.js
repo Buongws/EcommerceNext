@@ -1,36 +1,18 @@
-import NavBar from "@/components/Navbar";
-import { useSession, signIn, signOut } from "next-auth/react";
+import Layout from "@/components/Layout";
+import { useSession } from "next-auth/react";
 
 export default function Home() {
   const { data: session } = useSession();
-
-  if (!session) {
-    return (
-      <div className="bg-blue-900 w-screen h-screen flex items-center">
-        <div className="text-center w-full">
-          <button
-            onClick={() => signIn("google")}
-            className="bg-white p-2 px-4 rounded-lg"
-          >
-            Login with Google
-          </button>
+  if (!session) return;
+  return (
+    <Layout>
+      <div className="text-blue-900 flex justify-between ">
+        <h2>Hello, {session?.user?.name}</h2>
+        <div className="flex bg-gray-300 gap-1 text-black rounded-lg">
+          <img src={session?.user?.image} alt="" className="w-6 h-6"></img>
+          <span className="px-2">{session?.user?.name}</span>
         </div>
       </div>
-    );
-  }
-  return (
-    <div className="bg-blue-900 min-h-screen  flex">
-      <NavBar />
-      <div className="bg-white flex-grow mt-2 mr-2 mb-2 rounded-lg p-4">
-        LOGGED IN {session.user.email}
-      </div>
-
-      {/* <button
-        onClick={() => signOut("google")}
-        className="bg-white p-2 px-4 rounded-lg"
-      >
-        Logout
-      </button> */}
-    </div>
+    </Layout>
   );
 }
