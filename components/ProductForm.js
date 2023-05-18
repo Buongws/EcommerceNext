@@ -8,7 +8,7 @@ export default function ProductForm({
   title: existingTitle,
   description: existingDescription,
   price: existingPrice,
-  // images: existingImages,
+  images: existingImages,
   // category: assignedCategory,
   // properties: assignedProperties,
 }) {
@@ -16,6 +16,7 @@ export default function ProductForm({
   const [description, setDescription] = useState(existingDescription || "");
   const [price, setPrice] = useState(String(existingPrice) || ""); // Convert existingPrice to a string
   const [goToProducts, setGoToProducts] = useState(false);
+  const [images, setImages] = useState(existingImages || []);
   const router = useRouter();
   const [error, setError] = useState("");
   // const [category, setCategory] = useState(assignedCategory || "");
@@ -23,29 +24,34 @@ export default function ProductForm({
   //   assignedProperties || {}
   // );
 
-  // const [images, setImages] = useState(existingImages || []);
-
   // const [isUploading, setIsUploading] = useState(false);
   // const [categories, setCategories] = useState([]);
 
   const saveProduct = async (e) => {
     e.preventDefault();
-    const data = { title, description, price };
     if (
       title.trim() === "" ||
       description.trim() === "" ||
       price.trim() === ""
     ) {
       setError("Please fill out all the fields.");
+      return;
     }
-    if (_id) {
-      // Update
-      await axios.put("/api/products", { ...data, _id });
-    } else {
-      // Create
-      await axios.post("/api/products", data);
+
+    const data = { title, description, price };
+
+    try {
+      if (_id) {
+        // Update
+        await axios.put("/api/products", { ...data, _id });
+      } else {
+        // Create
+        await axios.post("/api/products", data);
+      }
+      setGoToProducts(true);
+    } catch (error) {
+      setError("An error occurred while saving the product.");
     }
-    setGoToProducts(true);
   };
 
   if (goToProducts) {
@@ -54,7 +60,6 @@ export default function ProductForm({
 
   return (
     <form onSubmit={saveProduct}>
-      {/* <h1>New Product</h1> */}
       <label>Product Name</label>
       <input
         type="text"
@@ -64,6 +69,28 @@ export default function ProductForm({
           setTitle(ev.target.value);
         }}
       ></input>
+      <label className="mb-2">Photos</label>
+      <div className="mb-2">
+        <label className="w-24 h-24 cursor-pointer text-center flex flex-col items-center justify-center text-sm gap-1 text-primary rounded-sm bg-white shadow-sm border border-primary">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            strokeWidth={1.5}
+            stroke="currentColor"
+            className="w-6 h-6"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"
+            />
+          </svg>
+          <div>Add image</div>
+          <input type="file" className="hidden" />
+        </label>
+      </div>
+      {!images.length && <div>No photos in this products</div>}
       <label>Description</label>
 
       <textarea
